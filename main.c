@@ -1,7 +1,13 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 #include <openssl/md5.h>
 
 /*
+ *  OpenSSL - MD5
+ *
  unsigned char *MD5(const unsigned char *d, unsigned long n, unsigned char *md);
  int MD5_Init(MD5_CTX *c);
  int MD5_Update(MD5_CTX *c, const void *data, unsigned long len);
@@ -10,9 +16,50 @@
 
 int main(int argc, char** argv)
 {
+  int dflag = 0;
+  int fflag = 0;
+  char *dvalue = NULL;
+  char *fvalue = NULL;
+  int c;
+
+  opterr = 0;
+
+  while ((c = getopt (argc, argv, "df:")) != -1) {
+    switch (c) {
+      case 'd':
+        // get directory path
+        dflag = 1;
+        dvalue = optarg;
+        break;
+
+      case 'f':
+        // get file name
+        fflag = 1;
+        fvalue = optarg;
+        break;
+       
+      case '?':
+        if (optopt == 'd') {
+          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+        } else if (optopt == 'f') { 
+          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+        } else if (isprint(optopt)) {
+          fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+        } else {
+          fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+        }
+        return 1;
+      
+      default:
+        abort();
+    }
+  }
+
+  printf ("dflag = %d, dvalue = %s, fflag = %d, fvalue = %s\n", dflag, dvalue, fflag, fvalue);
+
   unsigned char hash[MD5_DIGEST_LENGTH];
-  if(argc > 1) {
-    char *file_name = argv[1];
+  if((dflag == 1) || (fflag == 1)) {
+    char *file_name = fvalue;
     FILE *fd = fopen(file_name, "rb");
 
     MD5_CTX mdContext;
@@ -39,7 +86,7 @@ int main(int argc, char** argv)
     fclose (fd);
 
   } else {
-    printf("Wrong number of parameters! [%d]", argc);
+    printf("Missing parameter -d and/or -f\n");
     return 1;
   }
   return 0;
