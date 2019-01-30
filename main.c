@@ -9,12 +9,37 @@
 #include <openssl/ripemd.h>
 #include <openssl/sha.h>
 
-struct hash_opt {
+struct hash_opts {
   size_t context_size;
   int (*algo_init)(void*);
-  int (*algo_update)(void*);
-  int (*lago_final)(void*);
-} hash_opt;
+  int (*algo_update)(void*, const unsigned char*, unsigned long);
+  int (*algo_final)(unsigned char*, void*);
+};
+
+int hash_file(FILE* fd, struct hash_opts* algo)
+{
+  unsigned char hash[MD5_DIGEST_LENGTH]; 
+  void* contxt = malloc(algo->context_size);
+  int bytes;
+  unsigned char buff[1024];
+
+  algo->algo_init(contxt);
+
+  while ((bytes = fread(buff, 1, 1024, fd)) != 0) {
+    algo->algo_update(contxt, buff, bytes);
+  }
+  
+  algo->algo_final(hash, contxt);
+     
+  for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+    printf("%02x", hash[i]);
+  }
+ 
+  fclose (fd);
+  free(contxt);
+  return 0;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -95,7 +120,17 @@ int main(int argc, char** argv)
     printf("SHA1: %lu\n", sizeof(SHA_CTX));
     printf("SHA256: %lu\n", sizeof(SHA256_CTX));
     printf("SHA512: %lu\n", sizeof(SHA512_CTX));
-    
+   
+    printf("\n\n\n");
+
+    //printf("MD2: %lu\n", sizeof(MD2_CTX));
+    //printf("MD4: %lu\n", sizeof(MD4_CTX));
+    printf("MD5: %d\n", MD5_DIGEST_LENGTH);
+    //printf("RIPEMD-160: %lu\n", sizeof(RIPEMD160_CTX));
+    //printf("SHA1: %lu\n", sizeof(SHA_CTX));
+    //printf("SHA256: %lu\n", sizeof(SHA256_CTX));
+    //printf("SHA512: %lu\n", sizeof(SHA512_CTX));
+
     printf("Missing parameter -d and/or -f\n");
     return 1;
   }
