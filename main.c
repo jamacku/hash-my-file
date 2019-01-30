@@ -3,16 +3,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <openssl/md2.h>
+#include <openssl/md4.h>
 #include <openssl/md5.h>
+#include <openssl/ripemd.h>
+#include <openssl/sha.h>
 
-/*
- *  OpenSSL - MD5
- *
- unsigned char *MD5(const unsigned char *d, unsigned long n, unsigned char *md);
- int MD5_Init(MD5_CTX *c);
- int MD5_Update(MD5_CTX *c, const void *data, unsigned long len);
- int MD5_Final(unsigned char *md, MD5_CTX *c);
- */
+struct hash_opt {
+  size_t context_size;
+  int (*algo_init)(void*);
+  int (*algo_update)(void*);
+  int (*lago_final)(void*);
+} hash_opt;
 
 int main(int argc, char** argv)
 {
@@ -86,6 +88,14 @@ int main(int argc, char** argv)
     fclose (fd);
 
   } else {
+    printf("MD2: %lu\n", sizeof(MD2_CTX));
+    printf("MD4: %lu\n", sizeof(MD4_CTX));
+    printf("MD5: %lu\n", sizeof(MD5_CTX));
+    printf("RIPEMD-160: %lu\n", sizeof(RIPEMD160_CTX));
+    printf("SHA1: %lu\n", sizeof(SHA_CTX));
+    printf("SHA256: %lu\n", sizeof(SHA256_CTX));
+    printf("SHA512: %lu\n", sizeof(SHA512_CTX));
+    
     printf("Missing parameter -d and/or -f\n");
     return 1;
   }
