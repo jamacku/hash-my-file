@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <openssl/md2.h>
 #include <openssl/md4.h>
@@ -32,7 +33,7 @@ enum hash_algo {
   _HASH_MAX_ALGO
 };
 
-int hash_file(FILE* fd, struct hash_opts* algo)
+int hash_file (FILE* fd, struct hash_opts* algo)
 {
   unsigned char* hash = (unsigned char*)malloc(algo->hash_size); 
   void* contxt = malloc(algo->context_size);
@@ -51,55 +52,21 @@ int hash_file(FILE* fd, struct hash_opts* algo)
     printf("%02x", hash[i]);
   }
  
-  fclose (fd);
+  fclose(fd);
   free(hash);
   free(contxt);
   return 0;
 }
 
 
-int main(int argc, char** argv)
+int main (int argc, char** argv)
 {
-  int dflag = 0;
+  int aflag = 0;
   int fflag = 0;
-  char *dvalue = NULL;
+  char *avalue = NULL;
   char *fvalue = NULL;
+  unsigned algo_index;
   int c;
-
-  opterr = 0;
-
-  while ((c = getopt (argc, argv, "df:")) != -1) {
-    switch (c) {
-      case 'd':
-        // get directory path
-        dflag = 1;
-        dvalue = optarg;
-        break;
-
-      case 'f':
-        // get file name
-        fflag = 1;
-        fvalue = optarg;
-        break;
-       
-      case '?':
-        if (optopt == 'd') {
-          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-        } else if (optopt == 'f') { 
-          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-        } else if (isprint(optopt)) {
-          fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-        } else {
-          fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
-        }
-        return 1;
-      
-      default:
-        abort();
-    }
-  }
-
-  printf ("dflag = %d, dvalue = %s, fflag = %d, fvalue = %s\n", dflag, dvalue, fflag, fvalue);
 
   struct hash_opts *hopts;        
   struct hash_opts algos[_HASH_MAX_ALGO] = {{         /*HASH_MD2*/
@@ -157,6 +124,64 @@ int main(int argc, char** argv)
                                               .algo_update = &SHA512_Update,
                                               .algo_final = &SHA512_Final
                                             }};
+  
+  printf("MD5: %lu, %ld\n", algos[HASH_MD5].context_size, algos[HASH_MD5].hash_size);
+  
+  opterr = 0;
+
+  while ((c = getopt (argc, argv, "af:")) != -1) {
+    switch (c) {
+      case 'a':
+        // get directory path
+        aflag = 1;
+        avalue = optarg;
+        if ((strcmp(avalue, "md2")) == 0) {
+          algo_index = HASH_MD2;
+        } else if ((strcmp(avalue, "md4")) == 0) {
+          algo_index = HASH_MD4;
+        } else if ((strcmp(avalue, "md5")) == 0) {
+          algo_index = HASH_MD5;
+        } else if ((strcmp(avalue, "ripemd160")) == 0) {
+          algo_index = HASH_RIPEMD160;
+        } else if ((strcmp(avalue, "sha1")) == 0) {
+          algo_index = HASH_SHA1;
+        } else if ((strcmp(avalue, "sha224")) == 0) {
+          algo_index = HASH_SHA224;
+        } else if ((strcmp(avalue, "sha256")) == 0) {
+          algo_index = HASH_SHA256;
+        } else if ((strcmp(avalue, "sha384")) == 0) {
+          algo_index = HASH_SHA384;
+        } else if ((strcmp(avalue, "sha512")) == 0) {
+          algo_index = HASH_SHA512;
+        }
+        break;
+
+      case 'f':
+        // get file name
+        fflag = 1;
+        fvalue = optarg;
+        break;
+       
+      case '?':
+        if (optopt == 'a') {
+          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+        } else if (optopt == 'f') { 
+          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+        } else if (isprint(optopt)) {
+          fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+        } else {
+          fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+        }
+        return 1;
+      
+      default:
+        abort();
+    }
+  }
+
+  printf ("aflag = %d, avalue = %s, fflag = %d, fvalue = %s\n", aflag, avalue, fflag, fvalue);
+  
+  printf("[%d]: %lu, %ld\n", algo_index, algos[algo_index].context_size, algos[algo_index].hash_size);
 
   /*
         if (md5)
@@ -166,7 +191,7 @@ int main(int argc, char** argv)
   */
 
   unsigned char hash[MD5_DIGEST_LENGTH];
-  if((dflag == 1) || (fflag == 1)) {
+  if((aflag == 1) && (fflag == 1)) {
     char *file_name = fvalue;
     FILE *fd = fopen(file_name, "rb");
 
