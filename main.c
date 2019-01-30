@@ -9,23 +9,39 @@
 #include <openssl/ripemd.h>
 #include <openssl/sha.h>
 
+#define BUFF_SIZE 1024
+
 struct hash_opts {
+  size_t hash_size;
   size_t context_size;
   int (*algo_init)(void*);
   int (*algo_update)(void*, const unsigned char*, unsigned long);
   int (*algo_final)(unsigned char*, void*);
 };
 
+enum hash_algo {
+  HASH_MD2,
+  HASH_MD4,
+  HASH_MD5,
+  HASH_RIPEMD160,
+  HASH_SHA1,
+  HASH_SHA224,
+  HASH_SHA256,
+  HASH_SHA384,
+  HASH_SHA512,
+  _HASH_MAX_ALGO
+};
+
 int hash_file(FILE* fd, struct hash_opts* algo)
 {
-  unsigned char hash[MD5_DIGEST_LENGTH]; 
+  unsigned char* hash = (unsigned char*)malloc(algo->hash_size); 
   void* contxt = malloc(algo->context_size);
   int bytes;
-  unsigned char buff[1024];
+  unsigned char buff[BUFF_SIZE];
 
   algo->algo_init(contxt);
 
-  while ((bytes = fread(buff, 1, 1024, fd)) != 0) {
+  while ((bytes = fread(buff, 1, BUFF_SIZE, fd)) != 0) {
     algo->algo_update(contxt, buff, bytes);
   }
   
@@ -36,6 +52,7 @@ int hash_file(FILE* fd, struct hash_opts* algo)
   }
  
   fclose (fd);
+  free(hash);
   free(contxt);
   return 0;
 }
@@ -84,12 +101,78 @@ int main(int argc, char** argv)
 
   printf ("dflag = %d, dvalue = %s, fflag = %d, fvalue = %s\n", dflag, dvalue, fflag, fvalue);
 
+  struct hash_opts *hopts;        
+  struct hash_opts algos[_HASH_MAX_ALGO] = {{         /*HASH_MD2*/
+                                              .hash_size = MD2_DIGEST_LENGTH,
+                                              .context_size = sizeof(MD2_CTX),
+                                              .algo_init = &MD2_Init,
+                                              .algo_update = &MD2_Update,
+                                              .algo_final = &MD2_Final
+                                            }, {      /*HASH_MD4*/
+                                              .hash_size = MD4_DIGEST_LENGTH,
+                                              .context_size = sizeof(MD4_CTX),
+                                              .algo_init = &MD4_Init,
+                                              .algo_update = &MD4_Update,
+                                              .algo_final = &MD4_Final
+                                            }, {      /*HASH_MD5*/
+                                              .hash_size = MD5_DIGEST_LENGTH,
+                                              .context_size = sizeof(MD5_CTX),
+                                              .algo_init = &MD5_Init,
+                                              .algo_update = &MD5_Update,
+                                              .algo_final = &MD5_Final
+                                            }, {      /*HASH_RIPEMD160*/
+                                              .hash_size = RIPEMD160_DIGEST_LENGTH,
+                                              .context_size = sizeof(RIPEMD160_CTX),
+                                              .algo_init = &RIPEMD160_Init,
+                                              .algo_update = &RIPEMD160_Update,
+                                              .algo_final = &RIPEMD160_Final
+                                            }, {      /*HASH_SHA1*/
+                                              .hash_size = SHA_DIGEST_LENGTH,
+                                              .context_size = sizeof(SHA_CTX),
+                                              .algo_init = &SHA1_Init,
+                                              .algo_update = &SHA1_Update,
+                                              .algo_final = &SHA1_Final
+                                            }, {      /*HASH_SHA224*/
+                                              .hash_size = SHA224_DIGEST_LENGTH,
+                                              .context_size = sizeof(SHA256_CTX),
+                                              .algo_init = &SHA224_Init,
+                                              .algo_update = &SHA224_Update,
+                                              .algo_final = &SHA224_Final
+                                            }, {      /*HASH_SHA256*/
+                                              .hash_size = SHA256_DIGEST_LENGTH,
+                                              .context_size = sizeof(SHA256_CTX),
+                                              .algo_init = &SHA256_Init,
+                                              .algo_update = &SHA256_Update,
+                                              .algo_final = &SHA256_Final
+                                            }, {      /*HASH_SHA384*/
+                                              .hash_size = SHA384_DIGEST_LENGTH,
+                                              .context_size = sizeof(SHA512_CTX),
+                                              .algo_init = &SHA384_Init,
+                                              .algo_update = &SHA384_Update,
+                                              .algo_final = &SHA384_Final
+                                            }, {      /*HASH_SHA512*/
+                                              .hash_size = SHA512_DIGEST_LENGTH,
+                                              .context_size = sizeof(SHA512_CTX),
+                                              .algo_init = &SHA512_Init,
+                                              .algo_update = &SHA512_Update,
+                                              .algo_final = &SHA512_Final
+                                            }};
+
+  /*
+        if (md5)
+                p = &algos[HASH_MD5];
+
+        hash_file(f, p);
+  */
+
   unsigned char hash[MD5_DIGEST_LENGTH];
   if((dflag == 1) || (fflag == 1)) {
     char *file_name = fvalue;
     FILE *fd = fopen(file_name, "rb");
 
-    MD5_CTX mdContext;
+    void* mdContext;
+    mdContext = malloc(sizeof(MD5_CTX));
+    //MD5_CTX mdContext;
     int bytes;
     unsigned char data[1024];
 
@@ -98,12 +181,12 @@ int main(int argc, char** argv)
       return 2;
     }
 
-    MD5_Init (&mdContext);
+    MD5_Init (mdContext);
     
     while ((bytes = fread (data, 1, 1024, fd)) != 0) {
-      MD5_Update (&mdContext, data, bytes);
+      MD5_Update (mdContext, data, bytes);
     }
-    MD5_Final (hash, &mdContext);
+    MD5_Final (hash, mdContext);
     
     for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
       printf("%02x", hash[i]);
