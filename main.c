@@ -129,12 +129,13 @@ int main (int argc, char** argv)
   
   opterr = 0;
 
-  while ((c = getopt (argc, argv, "af:")) != -1) {
+  while ((c = getopt (argc, argv, "a:f:")) != -1) {
     switch (c) {
       case 'a':
         // get directory path
         aflag = 1;
         avalue = optarg;
+        printf("avalue: %s\n", avalue);
         if ((strcmp(avalue, "md2")) == 0) {
           algo_index = HASH_MD2;
         } else if ((strcmp(avalue, "md4")) == 0) {
@@ -153,6 +154,9 @@ int main (int argc, char** argv)
           algo_index = HASH_SHA384;
         } else if ((strcmp(avalue, "sha512")) == 0) {
           algo_index = HASH_SHA512;
+        } else {
+          printf("Missing parameter a!!\n");
+          return 5;
         }
         break;
 
@@ -160,6 +164,7 @@ int main (int argc, char** argv)
         // get file name
         fflag = 1;
         fvalue = optarg;
+        printf("fvalue: %s\n", fvalue);
         break;
        
       case '?':
