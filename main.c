@@ -188,63 +188,19 @@ int main (int argc, char** argv)
   
   printf("[%d]: %lu, %ld\n", algo_index, algos[algo_index].context_size, algos[algo_index].hash_size);
 
-  /*
-        if (md5)
-                p = &algos[HASH_MD5];
-
-        hash_file(f, p);
-  */
-
-  unsigned char hash[MD5_DIGEST_LENGTH];
   if((aflag == 1) && (fflag == 1)) {
     char *file_name = fvalue;
     FILE *fd = fopen(file_name, "rb");
-
-    void* mdContext;
-    mdContext = malloc(sizeof(MD5_CTX));
-    //MD5_CTX mdContext;
-    int bytes;
-    unsigned char data[1024];
 
     if (fd == NULL) {
       printf ("%s can't be opened.\n", file_name);
       return 2;
     }
 
-    MD5_Init (mdContext);
-    
-    while ((bytes = fread (data, 1, 1024, fd)) != 0) {
-      MD5_Update (mdContext, data, bytes);
-    }
-    MD5_Final (hash, mdContext);
-    
-    for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
-      printf("%02x", hash[i]);
-    }
-
-    printf (" %s\n", file_name);
-    fclose (fd);
+    hash_file(fd, &algos[algo_index]);
 
   } else {
-    printf("MD2: %lu\n", sizeof(MD2_CTX));
-    printf("MD4: %lu\n", sizeof(MD4_CTX));
-    printf("MD5: %lu\n", sizeof(MD5_CTX));
-    printf("RIPEMD-160: %lu\n", sizeof(RIPEMD160_CTX));
-    printf("SHA1: %lu\n", sizeof(SHA_CTX));
-    printf("SHA256: %lu\n", sizeof(SHA256_CTX));
-    printf("SHA512: %lu\n", sizeof(SHA512_CTX));
-   
-    printf("\n\n\n");
-
-    //printf("MD2: %lu\n", sizeof(MD2_CTX));
-    //printf("MD4: %lu\n", sizeof(MD4_CTX));
-    printf("MD5: %d\n", MD5_DIGEST_LENGTH);
-    //printf("RIPEMD-160: %lu\n", sizeof(RIPEMD160_CTX));
-    //printf("SHA1: %lu\n", sizeof(SHA_CTX));
-    //printf("SHA256: %lu\n", sizeof(SHA256_CTX));
-    //printf("SHA512: %lu\n", sizeof(SHA512_CTX));
-
-    printf("Missing parameter -d and/or -f\n");
+    printf("Missing parameter -a and/or -f\n");
     return 1;
   }
   return 0;
