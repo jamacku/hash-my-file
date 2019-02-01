@@ -1,21 +1,14 @@
 #include <stdio.h>
-#include <openssl/md5.h>
-
-/*
- unsigned char *MD5(const unsigned char *d, unsigned long n, unsigned char *md);
- int MD5_Init(MD5_CTX *c);
- int MD5_Update(MD5_CTX *c, const void *data, unsigned long len);
- int MD5_Final(unsigned char *md, MD5_CTX *c);
- */
+#include <openssl/sha.h>
 
 int main(int argc, char** argv)
 {
-  unsigned char hash[MD5_DIGEST_LENGTH];
+  unsigned char hash[SHA512_DIGEST_LENGTH];
   if(argc > 1) {
     char *file_name = argv[1];
     FILE *fd = fopen(file_name, "rb");
 
-    MD5_CTX mdContext;
+    SHA512_CTX mdContext;
     int bytes;
     unsigned char data[1024];
 
@@ -24,14 +17,14 @@ int main(int argc, char** argv)
       return 2;
     }
 
-    MD5_Init (&mdContext);
+    SHA512_Init (&mdContext);
     
     while ((bytes = fread (data, 1, 1024, fd)) != 0) {
-      MD5_Update (&mdContext, data, bytes);
+      SHA512_Update (&mdContext, data, bytes);
     }
-    MD5_Final (hash, &mdContext);
+    SHA512_Final (hash, &mdContext);
     
-    for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+    for (int i = 0; i < SHA512_DIGEST_LENGTH; i++) {
       printf("%02x", hash[i]);
     }
 
