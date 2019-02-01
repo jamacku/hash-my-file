@@ -47,10 +47,12 @@ int hash_file (FILE* fd, struct hash_opts* algo)
   }
   
   algo->algo_final(hash, contxt);
-     
-  for (int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+    
+  printf("Hash: ");
+  for (int i = 0; i < algo->hash_size; i++) {
     printf("%02x", hash[i]);
   }
+  printf("\n");
  
   fclose(fd);
   free(hash);
