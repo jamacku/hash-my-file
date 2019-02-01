@@ -67,8 +67,7 @@ int main (int argc, char** argv)
   char *fvalue = NULL;
   unsigned algo_index;
   int c;
-
-  struct hash_opts *hopts;        
+  
   struct hash_opts algos[_HASH_MAX_ALGO] = {{         /*HASH_MD2*/
                                               .hash_size = MD2_DIGEST_LENGTH,
                                               .context_size = sizeof(MD2_CTX),
@@ -125,14 +124,11 @@ int main (int argc, char** argv)
                                               .algo_final = &SHA512_Final
                                             }};
   
-  printf("MD5: %lu, %ld\n", algos[HASH_MD5].context_size, algos[HASH_MD5].hash_size);
-  
-  opterr = 0;
+   opterr = 0;
 
   while ((c = getopt (argc, argv, "a:f:")) != -1) {
     switch (c) {
       case 'a':
-        // get directory path
         aflag = 1;
         avalue = optarg;
         printf("avalue: %s\n", avalue);
@@ -161,7 +157,6 @@ int main (int argc, char** argv)
         break;
 
       case 'f':
-        // get file name
         fflag = 1;
         fvalue = optarg;
         printf("fvalue: %s\n", fvalue);
@@ -186,7 +181,7 @@ int main (int argc, char** argv)
 
   printf ("aflag = %d, avalue = %s, fflag = %d, fvalue = %s\n", aflag, avalue, fflag, fvalue);
   
-  printf("[%d]: %lu, %ld\n", algo_index, algos[algo_index].context_size, algos[algo_index].hash_size);
+  printf("[%d]:\ncontext size: %lu, hash_size: %ld\n", algo_index, algos[algo_index].context_size, algos[algo_index].hash_size);
 
   if((aflag == 1) && (fflag == 1)) {
     char *file_name = fvalue;
