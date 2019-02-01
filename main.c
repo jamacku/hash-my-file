@@ -49,11 +49,9 @@ int hash_file (FILE* fd, struct hash_opts* algo)
   
   algo->algo_final(hash, contxt);
     
-  printf("Hash: ");
   for (int i = 0; i < algo->hash_size; i++) {
     printf("%02x", hash[i]);
   }
-  printf("\n");
  
   fclose(fd);
   free(hash);
@@ -143,7 +141,7 @@ int main (int argc, char** argv)
       case 'a':
         aflag = 1;
         avalue = optarg;
-        printf("avalue: %s\n", avalue);
+        // printf("avalue: %s\n", avalue);
         if ((strcmp(avalue, "md2")) == 0) {
           algo_index = HASH_MD2;
         } else if ((strcmp(avalue, "md4")) == 0) {
@@ -171,7 +169,7 @@ int main (int argc, char** argv)
       case 'f':
         fflag = 1;
         fvalue = optarg;
-        printf("fvalue: %s\n", fvalue);
+        // printf("fvalue: %s\n", fvalue);
         break;
        
       case '?':
@@ -191,9 +189,9 @@ int main (int argc, char** argv)
     }
   }
 
-  printf ("aflag = %d, avalue = %s, fflag = %d, fvalue = %s\n", aflag, avalue, fflag, fvalue);
+  // printf ("aflag = %d, avalue = %s, fflag = %d, fvalue = %s\n", aflag, avalue, fflag, fvalue);
   
-  printf("[%d]:\ncontext size: %lu, hash_size: %ld\n", algo_index, algos[algo_index].context_size, algos[algo_index].hash_size);
+  // printf("[%s] | context size: %lu | hash_size: %ld\n", algos[algo_index].algo_name, algos[algo_index].context_size, algos[algo_index].hash_size);
 
   if((aflag == 1) && (fflag == 1)) {
     char *file_name = fvalue;
@@ -205,6 +203,7 @@ int main (int argc, char** argv)
     }
 
     hash_file(fd, &algos[algo_index]);
+    printf("  %s\n", fvalue);
 
   } else {
     printf("Missing parameter -a and/or -f\n");
