@@ -34,29 +34,36 @@ enum hash_algo {
   _HASH_MAX_ALGO
 };
 
-int hash_file (FILE* fd, struct hash_opts* algo)
+void* hash_file (char* file_path, unsigned char* digestbuf, struct hash_opts* algo)
+//void* hash_file (FILE* fd, struct hash_opts* algo)
 {
-  unsigned char* hash = (unsigned char*)malloc(algo->hash_size); 
+  // unsigned char* hash = (unsigned char*)malloc(algo->hash_size); 
   void* contxt = malloc(algo->context_size);
   int bytes;
   unsigned char buff[BUFF_SIZE];
-
+  FILE *fd = fopen(file_path, "rb");
+  
+  if (fd == NULL) {
+    printf ("%s can't be opened.\n", file_path);
+    return (void*)3;
+  }
+  
   algo->algo_init(contxt);
 
   while ((bytes = fread(buff, 1, BUFF_SIZE, fd)) != 0) {
     algo->algo_update(contxt, buff, bytes);
   }
   
-  algo->algo_final(hash, contxt);
+  algo->algo_final(digestbuf, contxt);
     
-  for (size_t i = 0; i < algo->hash_size; i++) {
+  /* for (size_t i = 0; i < algo->hash_size; i++) {
     printf("%02x", hash[i]);
-  }
+  } */
  
   fclose(fd);
-  free(hash);
+  // free(hash);
   free(contxt);
-  return 0;
+  return NULL;
 }
 
 
@@ -194,16 +201,14 @@ int main (int argc, char** argv)
   // printf("[%s] | context size: %lu | hash_size: %ld\n", algos[algo_index].algo_name, algos[algo_index].context_size, algos[algo_index].hash_size);
 
   if((aflag == 1) && (fflag == 1)) {
-    char *file_name = fvalue;
-    FILE *fd = fopen(file_name, "rb");
+    unsigned char* digestbuf = (unsigned char*)malloc(algos[algo_index].hash_size); 
+    char* file_name = fvalue;
 
-    if (fd == NULL) {
-      printf ("%s can't be opened.\n", file_name);
-      return 2;
+    hash_file(file_name, digestbuf, &algos[algo_index]);
+    for (size_t i = 0; i < algos[algo_index].hash_size; i++) {
+      printf("%02x", digestbuf[i]);
     }
-
-    hash_file(fd, &algos[algo_index]);
-    printf("  %s\n", fvalue);
+    printf(" %s\n", fvalue);
 
   } else {
     printf("Missing parameter -a and/or -f\n");
