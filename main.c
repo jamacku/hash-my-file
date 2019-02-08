@@ -1,71 +1,8 @@
-#include <stdio.h>
+#include "hash-file.h"
+
 #include <ctype.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
-#include <openssl/md2.h>
-#include <openssl/md4.h>
-#include <openssl/md5.h>
-#include <openssl/ripemd.h>
-#include <openssl/sha.h>
-
-#define BUFF_SIZE 1024
-
-struct hash_opts {
-  char algo_name[16];
-  size_t hash_size;
-  size_t context_size;
-  int (*algo_init)(void*);
-  int (*algo_update)(void*, const unsigned char*, unsigned long);
-  int (*algo_final)(unsigned char*, void*);
-};
-
-enum hash_algo {
-  HASH_MD2,
-  HASH_MD4,
-  HASH_MD5,
-  HASH_RIPEMD160,
-  HASH_SHA1,
-  HASH_SHA224,
-  HASH_SHA256,
-  HASH_SHA384,
-  HASH_SHA512,
-  _HASH_MAX_ALGO
-};
-
-void* hash_file (char* file_path, unsigned char* digestbuf, struct hash_opts* algo)
-//void* hash_file (FILE* fd, struct hash_opts* algo)
-{
-  // unsigned char* hash = (unsigned char*)malloc(algo->hash_size); 
-  void* contxt = malloc(algo->context_size);
-  int bytes;
-  unsigned char buff[BUFF_SIZE];
-  FILE *fd = fopen(file_path, "rb");
-  
-  if (fd == NULL) {
-    printf ("%s can't be opened.\n", file_path);
-    return (void*)3;
-  }
-  
-  algo->algo_init(contxt);
-
-  while ((bytes = fread(buff, 1, BUFF_SIZE, fd)) != 0) {
-    algo->algo_update(contxt, buff, bytes);
-  }
-  
-  algo->algo_final(digestbuf, contxt);
-    
-  /* for (size_t i = 0; i < algo->hash_size; i++) {
-    printf("%02x", hash[i]);
-  } */
- 
-  fclose(fd);
-  // free(hash);
-  free(contxt);
-  return NULL;
-}
-
 
 int main (int argc, char** argv)
 {
@@ -148,7 +85,6 @@ int main (int argc, char** argv)
       case 'a':
         aflag = 1;
         avalue = optarg;
-        // printf("avalue: %s\n", avalue);
         if ((strcmp(avalue, "md2")) == 0) {
           algo_index = HASH_MD2;
         } else if ((strcmp(avalue, "md4")) == 0) {
@@ -176,7 +112,6 @@ int main (int argc, char** argv)
       case 'f':
         fflag = 1;
         fvalue = optarg;
-        // printf("fvalue: %s\n", fvalue);
         break;
        
       case '?':
@@ -195,10 +130,6 @@ int main (int argc, char** argv)
         abort();
     }
   }
-
-  // printf ("aflag = %d, avalue = %s, fflag = %d, fvalue = %s\n", aflag, avalue, fflag, fvalue);
-  
-  // printf("[%s] | context size: %lu | hash_size: %ld\n", algos[algo_index].algo_name, algos[algo_index].context_size, algos[algo_index].hash_size);
 
   if((aflag == 1) && (fflag == 1)) {
     unsigned char* digestbuf = (unsigned char*)malloc(algos[algo_index].hash_size); 
