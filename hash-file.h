@@ -31,6 +31,70 @@ struct hash_opts {
   int (*algo_final)(unsigned char*, void*);
 };
 
+struct hash_opts algos[_HASH_MAX_ALGO] = {{         /*HASH_MD2*/
+                                            "md2",
+                                            MD2_DIGEST_LENGTH,
+                                            sizeof(MD2_CTX),
+                                            &MD2_Init,
+                                            &MD2_Update,
+                                            &MD2_Final
+                                          }, {      /*HASH_MD4*/
+                                            "md4",
+                                            MD4_DIGEST_LENGTH,
+                                            sizeof(MD4_CTX),
+                                            &MD4_Init,
+                                            &MD4_Update,
+                                            &MD4_Final
+                                          }, {      /*HASH_MD5*/
+                                            "md5",
+                                            MD5_DIGEST_LENGTH,
+                                            sizeof(MD5_CTX),
+                                            &MD5_Init,
+                                            &MD5_Update,
+                                            &MD5_Final
+                                          }, {      /*HASH_RIPEMD160*/
+                                            "ripemd160",
+                                            RIPEMD160_DIGEST_LENGTH,
+                                            sizeof(RIPEMD160_CTX),
+                                            &RIPEMD160_Init,
+                                            &RIPEMD160_Update,
+                                            &RIPEMD160_Final
+                                          }, {      /*HASH_SHA1*/
+                                            "sha1",
+                                            SHA_DIGEST_LENGTH,
+                                            sizeof(SHA_CTX),
+                                            &SHA1_Init,
+                                            &SHA1_Update,
+                                            &SHA1_Final
+                                          }, {      /*HASH_SHA224*/
+                                            "sha224",
+                                            SHA224_DIGEST_LENGTH,
+                                            sizeof(SHA256_CTX),
+                                            &SHA224_Init,
+                                            &SHA224_Update,
+                                            &SHA224_Final
+                                          }, {      /*HASH_SHA256*/
+                                            "sha256",
+                                            SHA256_DIGEST_LENGTH,
+                                            sizeof(SHA256_CTX),
+                                            &SHA256_Init,
+                                            &SHA256_Update,
+                                            &SHA256_Final
+                                          }, {      /*HASH_SHA384*/
+                                            "sha384",
+                                            SHA384_DIGEST_LENGTH,
+                                            sizeof(SHA512_CTX),
+                                            &SHA384_Init,
+                                            &SHA384_Update,
+                                            &SHA384_Final
+                                          }, {      /*HASH_SHA512*/
+                                            "sha512",
+                                            SHA512_DIGEST_LENGTH,
+                                            sizeof(SHA512_CTX),
+                                            &SHA512_Init,
+                                            &SHA512_Update,
+                                            &SHA512_Final
+                                          }};
 
 void* hash_file (char* file_path, unsigned char* digestbuf, struct hash_opts* algo)
 {

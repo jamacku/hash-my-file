@@ -11,74 +11,8 @@ int main (int argc, char** argv)
   char *avalue = NULL;
   char *fvalue = NULL;
   unsigned algo_index;
-  int c;
-  
-  struct hash_opts algos[_HASH_MAX_ALGO] = {{         /*HASH_MD2*/
-                                              .algo_name = "md2",
-                                              .hash_size = MD2_DIGEST_LENGTH,
-                                              .context_size = sizeof(MD2_CTX),
-                                              .algo_init = &MD2_Init,
-                                              .algo_update = &MD2_Update,
-                                              .algo_final = &MD2_Final
-                                            }, {      /*HASH_MD4*/
-                                              .algo_name = "md4",
-                                              .hash_size = MD4_DIGEST_LENGTH,
-                                              .context_size = sizeof(MD4_CTX),
-                                              .algo_init = &MD4_Init,
-                                              .algo_update = &MD4_Update,
-                                              .algo_final = &MD4_Final
-                                            }, {      /*HASH_MD5*/
-                                              .algo_name = "md5",
-                                              .hash_size = MD5_DIGEST_LENGTH,
-                                              .context_size = sizeof(MD5_CTX),
-                                              .algo_init = &MD5_Init,
-                                              .algo_update = &MD5_Update,
-                                              .algo_final = &MD5_Final
-                                            }, {      /*HASH_RIPEMD160*/
-                                              .algo_name = "ripemd160",
-                                              .hash_size = RIPEMD160_DIGEST_LENGTH,
-                                              .context_size = sizeof(RIPEMD160_CTX),
-                                              .algo_init = &RIPEMD160_Init,
-                                              .algo_update = &RIPEMD160_Update,
-                                              .algo_final = &RIPEMD160_Final
-                                            }, {      /*HASH_SHA1*/
-                                              .algo_name = "sha1",
-                                              .hash_size = SHA_DIGEST_LENGTH,
-                                              .context_size = sizeof(SHA_CTX),
-                                              .algo_init = &SHA1_Init,
-                                              .algo_update = &SHA1_Update,
-                                              .algo_final = &SHA1_Final
-                                            }, {      /*HASH_SHA224*/
-                                              .algo_name = "sha224",
-                                              .hash_size = SHA224_DIGEST_LENGTH,
-                                              .context_size = sizeof(SHA256_CTX),
-                                              .algo_init = &SHA224_Init,
-                                              .algo_update = &SHA224_Update,
-                                              .algo_final = &SHA224_Final
-                                            }, {      /*HASH_SHA256*/
-                                              .algo_name = "sha256",
-                                              .hash_size = SHA256_DIGEST_LENGTH,
-                                              .context_size = sizeof(SHA256_CTX),
-                                              .algo_init = &SHA256_Init,
-                                              .algo_update = &SHA256_Update,
-                                              .algo_final = &SHA256_Final
-                                            }, {      /*HASH_SHA384*/
-                                              .algo_name = "sha384",
-                                              .hash_size = SHA384_DIGEST_LENGTH,
-                                              .context_size = sizeof(SHA512_CTX),
-                                              .algo_init = &SHA384_Init,
-                                              .algo_update = &SHA384_Update,
-                                              .algo_final = &SHA384_Final
-                                            }, {      /*HASH_SHA512*/
-                                              .algo_name = "sha512",
-                                              .hash_size = SHA512_DIGEST_LENGTH,
-                                              .context_size = sizeof(SHA512_CTX),
-                                              .algo_init = &SHA512_Init,
-                                              .algo_update = &SHA512_Update,
-                                              .algo_final = &SHA512_Final
-                                            }};
-  
-   opterr = 0;
+  int c; 
+  opterr = 0;
 
   while ((c = getopt (argc, argv, "a:f:")) != -1) {
     switch (c) {
