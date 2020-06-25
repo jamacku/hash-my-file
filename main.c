@@ -37,7 +37,7 @@ int main (int argc, char** argv)
     char* file_name = fvalue;
     hash_file_md5(file_name);
   } else {
-    printf("Missing parameter -a and/or -f\n");
+    printf("Missing parameter -f\n");
     return 1;
   }
   return 0;
