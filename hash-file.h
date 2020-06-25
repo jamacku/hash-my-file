@@ -29,7 +29,7 @@ void* hash_file_md5 (char* file_path)
   EVP_DigestFinal_ex(contxt, md5_value, &md5_len);
   EVP_MD_CTX_free(contxt);
     
-  for (size_t i = 0; i < EVP_MAX_MD_SIZE; i++) {
+  for (size_t i = 0; i < md5_len; i++) {
     printf("%02x", md5_value[i]);
   }
   printf(" %s\n", file_path);
