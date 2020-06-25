@@ -34,15 +34,8 @@ int main (int argc, char** argv)
   }
 
   if(fflag == 1) {
-    unsigned char* digestbuf = (unsigned char*)malloc(MD5_DIGEST_LENGTH); 
     char* file_name = fvalue;
-
-    hash_file_md5(file_name, digestbuf);
-    for (size_t i = 0; i < MD5_DIGEST_LENGTH; i++) {
-      printf("%02x", digestbuf[i]);
-    }
-    printf(" %s\n", fvalue);
-
+    hash_file_md5(file_name);
   } else {
     printf("Missing parameter -a and/or -f\n");
     return 1;
