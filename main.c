@@ -7,15 +7,21 @@
 int main (int argc, char** argv)
 {
   int fflag = 0;
-  char *fvalue = NULL;
+  char *file_name = NULL;
+  char *result_file = NULL;
   int c; 
   opterr = 0;
 
-  while ((c = getopt (argc, argv, "f:")) != -1) {
+  while ((c = getopt (argc, argv, "f:r:")) != -1) {
     switch (c) {
       case 'f':
-        fflag = 1;
-        fvalue = optarg;
+        ++fflag;
+        file_name = optarg;
+        break;
+
+      case 'r':
+        ++fflag;
+        result_file = optarg;
         break;
        
       case '?':
@@ -33,9 +39,11 @@ int main (int argc, char** argv)
     }
   }
 
-  if(fflag == 1) {
-    char* file_name = fvalue;
-    hash_file_md5(file_name);
+  if (fflag == 2) {
+    hash_file_md5(file_name, result_file);
+  } else if (fflag == 1){
+    printf("Missing parameter -r\n");
+    return 1;
   } else {
     printf("Missing parameter -f\n");
     return 1;

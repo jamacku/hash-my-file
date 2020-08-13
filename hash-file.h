@@ -5,16 +5,22 @@
 
 #define BUFF_SIZE 1024
 
-void* hash_file_md5 (char* file_path)
+void* hash_file_md5 (char* file_path, char* file_path_result)
 {
   EVP_MD_CTX *contxt;
   const EVP_MD *md5_struct;
   unsigned int md5_len, bytes;
   unsigned char buff[BUFF_SIZE], md5_value[EVP_MAX_MD_SIZE];
-  FILE *fd = fopen(file_path, "rb");
+  FILE *fd = fopen(file_path, "r");
+  FILE *fd_result = fopen(file_path_result, "a");
 
   if (fd == NULL) {
     printf ("%s can't be opened.\n", file_path);
+    return (void*)3;
+  }
+  
+  if (fd_result == NULL) {
+    printf ("%s can't be opened.\n", file_path_result);
     return (void*)3;
   }
  
@@ -31,10 +37,13 @@ void* hash_file_md5 (char* file_path)
     
   for (size_t i = 0; i < md5_len; i++) {
     printf("%02x", md5_value[i]);
+    fprintf(fd_result, "%02x", md5_value[i]);
   }
-  printf(" %s\n", file_path);
-    
+  printf(" %s\n", file_path);  
+  fprintf(fd_result, " %s\n", file_path);  
+
   fclose(fd);
+  fclose(fd_result);
   return NULL;
 }
 
