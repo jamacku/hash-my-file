@@ -47,3 +47,26 @@ void* hash_file_md5 (char* file_path, char* file_path_result)
   return NULL;
 }
 
+char *check_hash_value (char *file_path, char *source_path)
+{
+
+  FILE *fd = fopen(file_path, "r");
+
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t nread;
+
+  if (fd == NULL) {
+    perror("fopen");
+    exit(EXIT_FAILURE);
+  }
+
+  while ((nread = getline(&line, &len, fd)) != -1) {
+    printf("Retrieved line of length %zu:\n", nread);
+    fwrite(line, nread, 1, stdout);
+  }
+
+  free(line);
+  fclose(fd);
+  return NULL;
+}
